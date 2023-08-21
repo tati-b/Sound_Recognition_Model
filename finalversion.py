@@ -70,7 +70,6 @@ model.fit(training_data[..., np.newaxis], training_labels, epochs=epochs, batch_
 test_loss, test_accuracy = model.evaluate(testing_data[..., np.newaxis], testing_labels)
 print("Overall accuracy:", test_accuracy)
 
-# Evaluate the model on dripping samples
 predictions = model.predict(testing_data[..., np.newaxis])
 predicted_labels = np.argmax(predictions, axis=1)
 
