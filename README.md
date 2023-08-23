@@ -48,4 +48,46 @@ model = Sequential([
     Dense(3, activation='softmax')
 ])
 ```
+__Convolutional Layer (Conv2D)__:
 
+* Purpose: This layer performs convolution operations on the input data (MFCCs) using a set of learnable filters. It helps detect simple features and patterns in the audio data.
+* How: Each filter scans a small region of the input data and extracts features. The ReLU (Rectified Linear Unit) activation function is applied to introduce non-linearity.
+* Utilizes 32 filters of size 3x3 to detect fundamental patterns in MFCCs.
+  
+__Max Pooling Layer (MaxPooling2D)__:
+* Purpose: Max pooling reduces the dimensions of the feature maps, focusing on the most important information and discarding less significant details.
+* How: It divides the input into non-overlapping regions and selects the maximum value from each region, reducing the size of the data while retaining the most relevant features.
+* Downsamples the data by selecting maximum values from a 2x2 region.
+  
+__Convolutional Layer (Conv2D)__:
+* Purpose: Building on the initial features, this layer employs more filters to capture higher-level patterns and relationships.
+* How: It performs convolutions with a new set of filters, further enhancing the model's ability to recognize complex features.
+* Employs 64 filters of size 3x3 to capture more complex patterns.
+  
+__Max Pooling Layer (MaxPooling2D)__:
+* Purpose: Similar to the previous max pooling layer, this one continues to downsample the feature maps, enhancing the abstraction of features.
+* How: It reduces the spatial dimensions of the data while preserving the most important features.
+
+__Flatten Layer__:
+* Purpose: Converts the 2D feature maps into a 1D vector, preparing the data for input into the fully connected layers.
+* How: It reshapes the data while maintaining the relationships between features, allowing the fully connected layers to process them.
+  
+__Dense Layer (Fully Connected)__:
+* Purpose: These layers process complex combinations of features learned from the convolutional layers.
+* How: The dense layers apply linear transformations followed by the ReLU activation function to analyze and transform the features.
+  
+__Dropout Layer__:
+
+* Purpose: Dropout helps prevent overfitting by randomly deactivating a specified fraction of neurons during training.
+* How: By randomly removing neurons, the model avoids relying heavily on specific features and learns a more generalized representation.
+  
+__Dense Layer (Fully Connected)__:
+
+* Purpose: This additional dense layer further refines the learned feature combinations.
+* How: Similar to the previous dense layer, it performs linear transformations and ReLU activations to capture intricate patterns.
+  
+__Output Layer (Dense)__:
+
+* Purpose: The final layer produces class probabilities for each sound category, enabling classification.
+* How: The softmax activation function converts the final layer's outputs into probability distributions over the categories, determining the most likely sound category for a given input.
+* Concludes the architecture with 3 units (sound categories).
