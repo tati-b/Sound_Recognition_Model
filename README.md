@@ -32,3 +32,20 @@ After training the model and evaluating its performance, the following accuracy 
   
 These accuracy values provide insights into how well the model can recognize different sound categories based on the provided audio data.
 
+## Model Architecture
+The model architecture is designed to learn and classify different sound categories based on the extracted MFCCs from audio samples.
+
+```
+model = Sequential([
+    Conv2D(32, (3, 3), activation='relu', input_shape=(n_mfcc, max_length, 1)),
+    MaxPooling2D((2, 2)),
+    Conv2D(64, (3, 3), activation='relu'),
+    MaxPooling2D((2, 2)),
+    Flatten(),
+    Dense(128, activation='relu'),
+    Dropout(0.5),
+    Dense(64, activation='relu'),
+    Dense(3, activation='softmax')
+])
+```
+
