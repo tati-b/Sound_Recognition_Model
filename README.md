@@ -111,7 +111,7 @@ The model has been trained using Python with the following major libraries:
 1. Ensure you have the necessary libraries installed (Keras, Librosa, NumPy).
 2. Run the `run_model.py` script to load the trained model and evaluate its accuracy on your testing data.
 
-## Results
+### Results
 After running the trained model and evaluating its performance, the following accuracy metric was obtained:
 * Restored model accuracy: 0.67
 
