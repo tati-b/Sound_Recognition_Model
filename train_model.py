@@ -4,7 +4,6 @@ import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
 from keras.utils import to_categorical
-# from keras.preprocessing.image import ImageDataGenerator
 import librosa
 
 training_folder = "D:\\project\\samples\\training"
@@ -12,11 +11,10 @@ validation_folder = "D:\\project\\samples\\validation"
 testing_folder = "D:\\project\\samples\\testing"
 
 n_mfcc = 13 # Number of coefficients to extract
-max_length = 700 # 700/100=7sec 
+max_length = 700 # 700/100 = 7sec 
 
 batch_size = 5
 epochs = 50
-
 
 def extract_and_pad(audio_path, n_mfcc, max_length):
     y, sr = librosa.load(audio_path)
@@ -60,7 +58,7 @@ model = Sequential([
     Dense(3, activation='softmax')
 ])
 
-#sparse_categorical_crossentropy?   categorical_crossentropy - produces a one-hot array containing the probable match for each category?
+# Compile the model
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
 # Train the model
