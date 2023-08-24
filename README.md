@@ -93,15 +93,6 @@ __Output Layer (Dense)__:
 * Concludes the architecture with 3 units (sound categories).
 
 ## Trained Model
-
-The trained model is designed to classify audio samples into different categories. It has been trained using the provided dataset and includes the following architecture:
-
-- Input: MFCC features with a shape of (n_mfcc, max_length)
-- Convolutional layers with ReLU activation
-- MaxPooling layers
-- Fully connected (Dense) layers with ReLU activation
-- Output layer with softmax activation for multi-class classification
-
 The trained model's architecture and implementation can be found in the `audio_model/audio_model.h5` file. The size of the model file is approximately 16.5 MB.
 
 ### Evaluation
@@ -124,4 +115,4 @@ The model has been trained using Python with the following major libraries:
 After running the trained model and evaluating its performance, the following accuracy metric was obtained:
 * Restored model accuracy: 0.67
 
-**Note**: The testing data used for model evaluation is the same data used during the initial training process. This was done to show the model's functionality and provide a direct comparison to the initial training accuracy (0.67). For accurate and unbiased model evaluation, it's recommended to employ distinct and unseen testing data.
+**Note**: The testing data used for model evaluation is the same data used during the initial training and testing process. This was done to show the model's functionality and provide a direct comparison to the initial training accuracy (0.67). For accurate and unbiased model evaluation, it's recommended to employ distinct and unseen testing data.
