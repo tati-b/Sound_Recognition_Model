@@ -115,3 +115,7 @@ print("Silence accuracy:", silence_accuracy)
 Here, predicted_labels contains the predicted class indices for each testing sample. 
 The code then calculates accuracy for each class separately by comparing the predicted labels with the true labels (using the indices). 
 This provides insights into how well the model performs for each specific class.
+
+10. Saving the model:
+model.save('audio_model/audio_model.h5', overwrite=True, include_optimizer=True)
+print("Model saved as 'audio_model/audio_model.h5'")
