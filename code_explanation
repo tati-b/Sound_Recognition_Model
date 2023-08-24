@@ -111,6 +111,7 @@ print("Flowing accuracy:", flowing_accuracy)
 silence_indices = np.where(testing_labels[:, 2] == 1)[0]
 silence_accuracy = np.mean(predicted_labels[silence_indices] == 2)
 print("Silence accuracy:", silence_accuracy)
+
 Here, predicted_labels contains the predicted class indices for each testing sample. 
 The code then calculates accuracy for each class separately by comparing the predicted labels with the true labels (using the indices). 
 This provides insights into how well the model performs for each specific class.
