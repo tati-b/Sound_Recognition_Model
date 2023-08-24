@@ -91,3 +91,37 @@ __Output Layer (Dense)__:
 * Purpose: The final layer produces class probabilities for each sound category, enabling classification.
 * How: The softmax activation function converts the final layer's outputs into probability distributions over the categories, determining the most likely sound category for a given input.
 * Concludes the architecture with 3 units (sound categories).
+
+## Trained Model
+
+The trained model is designed to classify audio samples into different categories. It has been trained using the provided dataset and includes the following architecture:
+
+- Input: MFCC features with a shape of (n_mfcc, max_length)
+- Convolutional layers with ReLU activation
+- MaxPooling layers
+- Fully connected (Dense) layers with ReLU activation
+- Output layer with softmax activation for multi-class classification
+
+The trained model's architecture and implementation can be found in the `audio_model/audio_model.h5` file. The size of the model file is approximately 16.5 MB.
+
+### Evaluation
+
+To evaluate the model's performance on your own testing data, you can use the provided `run_model.py` script. This script loads the model and performs inference on the testing data, providing accuracy as an evaluation metric.
+
+### Requirements
+
+The model has been trained using Python with the following major libraries:
+- Keras (part of TensorFlow) for model creation and training
+- Librosa for audio feature extraction
+- NumPy for array manipulation
+
+### Usage
+
+1. Ensure you have the necessary libraries installed (Keras, Librosa, NumPy).
+2. Run the `run_model.py` script to load the trained model and evaluate its accuracy on your testing data.
+
+## Results
+After running the trained model and evaluating its performance, the following accuracy metric was obtained:
+* Restored model accuracy: 0.67
+
+**Note**: The testing data used for model evaluation is the same data used during the initial training process. This was done to show the model's functionality and provide a direct comparison to the initial training accuracy (0.67). For accurate and unbiased model evaluation, it's recommended to employ distinct and unseen testing data.
