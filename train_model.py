@@ -5,16 +5,19 @@ from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
 from keras.utils import to_categorical
 import librosa
+from keras.models import load_model
+
 
 training_folder = "D:\\project\\samples\\training"
 validation_folder = "D:\\project\\samples\\validation"
 testing_folder = "D:\\project\\samples\\testing"
 
 n_mfcc = 13 # Number of coefficients to extract
-max_length = 700 # 700/100 = 7sec 
+max_length = 700 # 700/100=7sec 
 
 batch_size = 5
 epochs = 50
+
 
 def extract_and_pad(audio_path, n_mfcc, max_length):
     y, sr = librosa.load(audio_path)
@@ -38,6 +41,7 @@ def generate_data_and_labels(data_dir, n_mfcc, max_length):
     for i, audio_path in enumerate(audio_paths):
         mfccs = extract_and_pad(audio_path, n_mfcc=n_mfcc, max_length=max_length)
         data[i] = mfccs
+        # one-hot encoded categorical labels with a total of 3 classes 
     labels = to_categorical(labels, num_classes=3) 
     return data, labels
 
@@ -46,6 +50,13 @@ training_data, training_labels = generate_data_and_labels(training_folder, n_mfc
 validation_data, validation_labels = generate_data_and_labels(validation_folder, n_mfcc, max_length)
 testing_data, testing_labels = generate_data_and_labels(testing_folder, n_mfcc, max_length)
 
+# Save testing data as a numpy array
+np.save('testing_data.npy', testing_data)
+
+# Save testing labels as a numpy array
+np.save('testing_labels.npy', testing_labels)
+
+# Build the model
 model = Sequential([
     Conv2D(32, (3, 3), activation='relu', input_shape=(n_mfcc, max_length, 1)),
     MaxPooling2D((2, 2)),
@@ -58,13 +69,14 @@ model = Sequential([
     Dense(3, activation='softmax')
 ])
 
-# Compile the model
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
 # Train the model
 model.fit(training_data[..., np.newaxis], training_labels, epochs=epochs, batch_size=batch_size, validation_data=(validation_data[..., np.newaxis], validation_labels))
 
-# Evaluate model's performance on the testing data
+# Show the model architecture
+model.summary()
+
 test_loss, test_accuracy = model.evaluate(testing_data[..., np.newaxis], testing_labels)
 print("Overall accuracy:", test_accuracy)
 
@@ -83,4 +95,6 @@ silence_indices = np.where(testing_labels[:, 2] == 1)[0]
 silence_accuracy = np.mean(predicted_labels[silence_indices] == 2)
 print("Silence accuracy:", silence_accuracy)
 
-
+# Save the model
+model.save('audio_model/audio_model.h5', overwrite=True, include_optimizer=True)
+print("Model saved as 'audio_model/audio_model.h5'")
