@@ -1,0 +1,116 @@
+1. Audio Feature Extraction (MFCCs):
+The goal of this process is to extract relevant features from the audio signals. 
+The code uses the librosa library to load an audio file (audio_path) and compute its Mel-frequency cepstral coefficients (MFCCs). 
+MFCCs are commonly used in speech and audio processing to represent the spectral characteristics of the sound. 
+
+y, sr = librosa.load(audio_path)  # Load audio file and its sampling rate
+mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=n_mfcc)  # Compute MFCCs
+pad_width = max(max_length - mfccs.shape[1], 0)  # Calculate padding
+padded_mfccs = np.pad(mfccs, ((0, 0), (0, pad_width)), mode='constant')[:, :max_length]  # Pad and truncate
+return padded_mfccs
+
+Here, y is the audio waveform, sr is the sampling rate, and n_mfcc is the number of MFCC coefficients to extract. 
+The MFCCs are computed and then padded or truncated to match the desired max_length (700 frames in this case).
+
+2. Generating Data and Labels:
+The generate_data_and_labels function is responsible for preparing the data and labels for the neural network. 
+It scans through the audio files in a given directory (data_dir), computes MFCCs for each audio file, and creates corresponding labels. 
+
+audio_paths = []  # List to store paths of audio files
+labels = []  # List to store labels (class indices)
+for label, class_name in enumerate(os.listdir(data_dir)):
+    class_dir = os.path.join(data_dir, class_name)
+    for filename in os.listdir(class_dir):
+        if filename.endswith(".wav"):
+            audio_path = os.path.join(class_dir, filename)
+            audio_paths.append(audio_path)
+            labels.append(label)
+            
+This code iterates through each class directory within the data_dir. 
+For each audio file found (ending with ".wav"), its path is stored in audio_paths, and the corresponding label (class index) is stored in labels.
+
+3. Creating Data and Labels Arrays:
+After collecting audio paths and labels, the next step is to create arrays that contain the actual data and labels. 
+The function creates a NumPy array called data to hold the MFCCs and a one-hot encoded array for the labels using to_categorical from Keras:
+
+num_samples = len(audio_paths)
+data = np.zeros((num_samples, n_mfcc, max_length))
+for i, audio_path in enumerate(audio_paths):
+    mfccs = extract_and_pad(audio_path, n_mfcc=n_mfcc, max_length=max_length)
+    data[i] = mfccs
+labels = to_categorical(labels, num_classes=3)
+      
+Here, data is a 3D array with shape (num_samples, n_mfcc, max_length) where num_samples is the total number of audio samples. 
+The MFCCs are computed using the extract_and_pad function and stored in this array. 
+The labels array is one-hot encoded to represent the classes.
+
+4. Generating Data for Each Dataset:
+The code generates data and labels arrays for training, validation, and testing sets:
+    
+training_data, training_labels = generate_data_and_labels(training_folder, n_mfcc, max_length)
+validation_data, validation_labels = generate_data_and_labels(validation_folder, n_mfcc, max_length)
+testing_data, testing_labels = generate_data_and_labels(testing_folder, n_mfcc, max_length)
+Each of these arrays will be used to train, validate, and test the neural network, respectively.
+      
+5. Model Architecture:
+The neural network model is defined using the Keras Sequential API. 
+It consists of several layers including convolutional, pooling, and fully connected layers. 
+This architecture is designed to process MFCC data.
+
+model = Sequential([
+    Conv2D(32, (3, 3), activation='relu', input_shape=(n_mfcc, max_length, 1)),
+    MaxPooling2D((2, 2)),
+    Conv2D(64, (3, 3), activation='relu'),
+    MaxPooling2D((2, 2)),
+    Flatten(),
+    Dense(128, activation='relu'),
+    Dropout(0.5),
+    Dense(64, activation='relu'),
+    Dense(3, activation='softmax')
+])
+This model comprises convolutional layers (Conv2D) with ReLU activation, pooling layers (MaxPooling2D), and fully connected layers (Dense). 
+      The model processes 2D input data, where each input is a 2D matrix representing the MFCCs of an audio sample. 
+      The output layer uses the softmax activation for multiclass classification.
+
+6. Compilation:
+After defining the model architecture, it needs to be compiled. 
+During compilation, you define the optimizer, loss function, and evaluation metrics.
+
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+                                                  
+In this case, the Adam optimizer is used, and the loss function is categorical cross-entropy, suitable for multiclass classification. 
+The model's accuracy is also tracked as a metric during training.
+
+7. Training:
+The model is trained using the training data and labels. The fit method is used for this purpose.
+                                                                               
+model.fit(training_data[..., np.newaxis], training_labels, epochs=epochs, batch_size=batch_size, validation_data=(validation_data[..., np.newaxis], validation_labels))
+Here, training_data and validation_data are the MFCC data arrays for training and validation, respectively. training_labels and validation_labels are the corresponding one-hot encoded label arrays. The model trains for the specified number of epochs, with the specified batch size. Validation data is used to monitor the model's performance during training.
+
+8. Evaluation:
+The model's performance is evaluated using the testing data and labels. 
+The evaluate method returns the loss and accuracy on the testing dataset.
+
+test_loss, test_accuracy = model.evaluate(testing_data[..., np.newaxis], testing_labels)
+print("Overall accuracy:", test_accuracy)
+    
+9. Class-wise Accuracy:
+The code then calculates the accuracy for each individual class based on the predictions made by the model.
+
+predictions = model.predict(testing_data[..., np.newaxis])
+predicted_labels = np.argmax(predictions, axis=1)
+
+dripping_indices = np.where(testing_labels[:, 0] == 1)[0]
+dripping_accuracy = np.mean(predicted_labels[dripping_indices] == 0)
+print("Dripping accuracy:", dripping_accuracy)
+
+flowing_indices = np.where(testing_labels[:, 1] == 1)[0]
+flowing_accuracy = np.mean(predicted_labels[flowing_indices] == 1)
+print("Flowing accuracy:", flowing_accuracy)
+
+silence_indices = np.where(testing_labels[:, 2] == 1)[0]
+silence_accuracy = np.mean(predicted_labels[silence_indices] == 2)
+print("Silence accuracy:", silence_accuracy)
+Here, predicted_labels contains the predicted class indices for each testing sample. 
+The code then calculates accuracy for each class separately by comparing the predicted labels with the true labels (using the indices). 
+This provides insights into how well the model performs for each specific class.
